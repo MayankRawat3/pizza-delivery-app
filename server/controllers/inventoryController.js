@@ -1,5 +1,9 @@
 import Inventory from "../models/Inventory.js";
 
+import {
+  sendLowStockAlertEmail
+} from "../services/emailService.js";
+
 // ==========================================
 // GET ALL INVENTORY ITEMS
 // ==========================================
@@ -22,7 +26,6 @@ export const getInventory = async (req, res) => {
     });
   }
 };
-
 
 // ==========================================
 // GET SINGLE INVENTORY ITEM
@@ -54,7 +57,6 @@ export const getInventoryItem = async (req, res) => {
   }
 };
 
-
 // ==========================================
 // CREATE INVENTORY ITEM
 // ==========================================
@@ -69,7 +71,6 @@ export const createInventoryItem = async (req, res) => {
       unit
     } = req.body;
 
-    // Required fields
     if (
       !name ||
       !category ||
@@ -82,7 +83,6 @@ export const createInventoryItem = async (req, res) => {
       });
     }
 
-    // Prevent negative values
     if (quantity < 0 || threshold < 0) {
       return res.status(400).json({
         message: "Quantity and threshold cannot be negative"
@@ -111,7 +111,6 @@ export const createInventoryItem = async (req, res) => {
   }
 };
 
-
 // ==========================================
 // UPDATE INVENTORY STOCK
 // ==========================================
@@ -136,7 +135,6 @@ export const updateInventoryStock = async (req, res) => {
       });
     }
 
-    // Update only provided fields
     if (name !== undefined) {
       item.name = name;
     }
@@ -153,8 +151,12 @@ export const updateInventoryStock = async (req, res) => {
       }
 
       item.quantity = quantity;
-    }
 
+      // Reset low-stock alert after restocking
+      if (quantity > item.threshold) {
+        item.lowStockAlertSent = false;
+      }
+    }
     if (threshold !== undefined) {
       if (threshold < 0) {
         return res.status(400).json({
@@ -184,7 +186,6 @@ export const updateInventoryStock = async (req, res) => {
     });
   }
 };
-
 
 // ==========================================
 // DELETE INVENTORY ITEM
@@ -348,18 +349,28 @@ export const checkInventoryBeforePayment = async (req, res) => {
           .replace(/-/g, " ")
           .replace(/\s+/g, " ");
 
-        return normalizedInventoryName === normalizedRequiredName;
+        return (
+          normalizedInventoryName ===
+          normalizedRequiredName
+        );
       });
 
       if (!inventoryItem) {
         return res.status(400).json({
-          message: `Inventory item not found: ${required.name}`
+          message:
+            `Inventory item not found: ${required.name}`
         });
       }
 
-      if (inventoryItem.quantity < required.quantity) {
+      if (
+        inventoryItem.quantity <
+        required.quantity
+      ) {
         return res.status(400).json({
-          message: `Insufficient stock for ${required.name}. Available: ${inventoryItem.quantity}, Required: ${required.quantity}`
+          message:
+            `Insufficient stock for ${required.name}. ` +
+            `Available: ${inventoryItem.quantity}, ` +
+            `Required: ${required.quantity}`
         });
       }
     }
@@ -376,6 +387,47 @@ export const checkInventoryBeforePayment = async (req, res) => {
     );
 
     return res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
+// ==========================================
+// GET LOW STOCK ITEMS
+// ==========================================
+
+export const getLowStockItems = async (req, res) => {
+  try {
+    const lowStockItems = await Inventory.find({
+      $expr: {
+        $lte: ["$quantity", "$threshold"]
+      }
+    }).sort({
+      category: 1,
+      name: 1
+    });
+
+    // Send email if low-stock items exist
+    if (lowStockItems.length > 0) {
+      await sendLowStockAlertEmail(
+        process.env.EMAIL_USER,
+        lowStockItems
+      );
+    }
+
+    res.status(200).json({
+      message: "Low stock items fetched successfully",
+      count: lowStockItems.length,
+      items: lowStockItems
+    });
+
+  } catch (error) {
+    console.error(
+      "LOW STOCK ERROR:",
+      error
+    );
+
+    res.status(500).json({
       message: error.message
     });
   }

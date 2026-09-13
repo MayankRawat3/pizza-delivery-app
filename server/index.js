@@ -11,7 +11,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
-
+import startInventoryCron from "./services/inventoryCron.js";
 // ========================================
 // LOAD ENVIRONMENT VARIABLES
 // ========================================
@@ -181,11 +181,7 @@ app.get(
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(
-  PORT,
-  () => {
-    console.log(
-      `Server running on port ${PORT}`
-    );
-  }
-);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  startInventoryCron();
+});

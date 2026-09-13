@@ -217,3 +217,127 @@ export const sendResetPasswordEmail = async (email, token) => {
     throw error;
   }
 };
+
+
+// ==========================================
+// SEND LOW STOCK ALERT EMAIL
+// ==========================================
+
+export const sendLowStockAlertEmail = async (
+  adminEmail,
+  lowStockItems
+) => {
+  try {
+    if (
+      !adminEmail ||
+      !Array.isArray(lowStockItems) ||
+      lowStockItems.length === 0
+    ) {
+      return;
+    }
+
+    const itemsHtml = lowStockItems
+      .map(
+        (item) => `
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+              ${item.name}
+            </td>
+
+            <td style="padding: 10px; border: 1px solid #ddd;">
+              ${item.category}
+            </td>
+
+            <td style="padding: 10px; border: 1px solid #ddd;">
+              ${item.quantity}
+            </td>
+
+            <td style="padding: 10px; border: 1px solid #ddd;">
+              ${item.threshold}
+            </td>
+
+            <td style="padding: 10px; border: 1px solid #ddd;">
+              ${item.unit}
+            </td>
+          </tr>
+        `
+      )
+      .join("");
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: adminEmail,
+      subject: "⚠️ Low Stock Alert - Pizza Delivery App",
+
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+
+          <h2>⚠️ Low Stock Alert</h2>
+
+          <p>
+            The following inventory items have reached
+            or fallen below their stock threshold:
+          </p>
+
+          <table
+            style="
+              border-collapse: collapse;
+              width: 100%;
+              max-width: 700px;
+            "
+          >
+
+            <thead>
+              <tr>
+                <th style="padding: 10px; border: 1px solid #ddd;">
+                  Item
+                </th>
+
+                <th style="padding: 10px; border: 1px solid #ddd;">
+                  Category
+                </th>
+
+                <th style="padding: 10px; border: 1px solid #ddd;">
+                  Current Stock
+                </th>
+
+                <th style="padding: 10px; border: 1px solid #ddd;">
+                  Threshold
+                </th>
+
+                <th style="padding: 10px; border: 1px solid #ddd;">
+                  Unit
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+
+          </table>
+
+          <p style="margin-top: 20px;">
+            Please restock these items as soon as possible.
+          </p>
+
+        </div>
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log(
+      "LOW STOCK ALERT EMAIL SENT:",
+      info.messageId
+    );
+
+  } catch (error) {
+    console.error(
+      "LOW STOCK EMAIL ERROR:",
+      error
+    );
+
+    throw error;
+  }
+};

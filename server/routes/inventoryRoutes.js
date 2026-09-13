@@ -6,7 +6,8 @@ import {
   createInventoryItem,
   updateInventoryStock,
   deleteInventoryItem,
-  checkInventoryBeforePayment
+  checkInventoryBeforePayment,
+  getLowStockItems
 } from "../controllers/inventoryController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -23,6 +24,20 @@ router.post(
   "/check",
   protect,
   checkInventoryBeforePayment
+);
+
+
+
+// ==========================================
+// GET LOW STOCK ITEMS
+// Admin only
+// ==========================================
+
+router.get(
+  "/low-stock",
+  protect,
+  adminOnly,
+  getLowStockItems
 );
 
 // ==========================================
@@ -84,5 +99,7 @@ router.delete(
   adminOnly,
   deleteInventoryItem
 );
+
+
 
 export default router;
