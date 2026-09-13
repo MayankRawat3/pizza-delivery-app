@@ -25,6 +25,7 @@ import { CartProvider } from "./context/CartContext";
 
 
 import AdminInventory from "./pages/AdminInventory";
+import AdminLogin from "./pages/AdminLogin"; 
 
 // PROFILE PAGE
 function Profile() {
@@ -59,6 +60,11 @@ function App() {
           <Route
             path="/login"
             element={<Login />}
+          />
+
+          <Route
+            path="/admin/login"
+            element={<AdminLogin />}
           />
 
           <Route

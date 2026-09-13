@@ -13,11 +13,16 @@ function OrderDetails() {
   // FETCH ORDER
 
   useEffect(() => {
+    let interval;
+
     const fetchOrder = async () => {
       try {
         const data = await getOrderById(id);
 
         setOrder(data.order);
+        setError("");
+
+        setLoading(false);
 
       } catch (error) {
         console.error(
@@ -30,12 +35,23 @@ function OrderDetails() {
           "Failed to load order"
         );
 
-      } finally {
         setLoading(false);
       }
     };
 
+    // Initial fetch
     fetchOrder();
+
+    // Poll every 5 seconds
+    interval = setInterval(() => {
+      fetchOrder();
+    }, 5000);
+
+    // Cleanup interval
+    return () => {
+      clearInterval(interval);
+    };
+
   }, [id]);
 
   // LOADING
