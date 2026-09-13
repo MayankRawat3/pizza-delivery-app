@@ -38,7 +38,6 @@ export const protect = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    console.log("DECODED JWT:", decoded);
 
     // ========================================
     // GET USER ID
@@ -64,7 +63,6 @@ export const protect = (req, res, next) => {
       role: decoded.role
     };
 
-    console.log("AUTH USER:", req.user);
 
     next();
 

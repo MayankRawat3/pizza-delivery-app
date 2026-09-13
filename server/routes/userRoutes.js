@@ -1,6 +1,5 @@
 import express from "express";
 
-console.log("🔥 USER ROUTES LOADED");
 
 import {
   getAllUsers,
@@ -33,7 +32,6 @@ router.get(
 // ADMIN - UPDATE USER ROLE
 // ==========================================
 
-console.log("🔥 REGISTERING ROLE PATCH ROUTE");
 
 router.patch(
   "/admin/:id/role",
@@ -43,7 +41,6 @@ router.patch(
 );
 
 
-console.log("🔥 ROLE PATCH ROUTE REGISTERED");
 
 
 // ==========================================

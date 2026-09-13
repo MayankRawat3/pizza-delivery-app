@@ -7,12 +7,11 @@ import {
 
 const router = express.Router();
 
-console.log("✅ PAYMENT ROUTES FILE LOADED");
 
-router.post("/create-order", (req, res, next) => {
-  console.log("✅ CREATE ORDER ROUTE HIT");
-  next();
-}, createOrder);
+router.post(
+  "/create-order",
+  createOrder
+);
 
 router.post("/verify-payment", verifyPayment);
 

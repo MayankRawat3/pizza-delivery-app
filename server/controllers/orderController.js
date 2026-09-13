@@ -6,9 +6,7 @@ import Inventory from "../models/Inventory.js";
 // ========================================
 
 export const createOrder = async (req, res) => {
-  console.log("🔥 CREATE ORDER CONTROLLER HIT");
-  console.log("🔥 REQUEST BODY:", req.body);
-  console.log("🔥 REQUEST USER:", req.user);
+ 
 
   try {
     const {

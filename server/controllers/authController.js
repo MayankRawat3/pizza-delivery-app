@@ -48,16 +48,12 @@ export const register = async (req, res) => {
         new Date(Date.now() + 15 * 60 * 1000)
     });
 
-    // Send verification email
-    console.log("ABOUT TO SEND VERIFICATION EMAIL");
-    console.log("EMAIL TO:", user.email);
-
+    
     await sendVerificationEmail(
       user.email,
       verificationToken
     );
 
-    console.log("VERIFICATION EMAIL FUNCTION FINISHED");
 
     res.status(201).json({
       message:

@@ -40,13 +40,7 @@ const Checkout = () => {
   // ========================================
 
   const handlePayment = async () => {
-    console.log("🔥 HANDLE PAYMENT CLICKED");
-    console.log("🔥 Cart:", cart);
-    console.log("🔥 Subtotal:", totalPrice);
-    console.log("🔥 Delivery Fee:", deliveryFee);
-    console.log("🔥 Final Total:", finalTotal);
-    console.log("🔥 Delivery Address:", deliveryAddress);
-
+    
     // ========================================
     // ADDRESS VALIDATION
     // ========================================
@@ -67,7 +61,6 @@ const Checkout = () => {
       // STEP 1: CHECK INVENTORY BEFORE PAYMENT
       // ========================================
 
-      console.log("📦 Checking inventory before payment...");
 
       try {
         const inventoryResponse = await api.post(
@@ -77,10 +70,7 @@ const Checkout = () => {
           }
         );
 
-        console.log(
-          "✅ INVENTORY CHECK:",
-          inventoryResponse.data
-        );
+        
 
       } catch (inventoryError) {
         console.error(
@@ -104,7 +94,6 @@ const Checkout = () => {
       // STEP 2: CREATE RAZORPAY ORDER
       // ========================================
 
-      console.log("🔥 Creating Razorpay order...");
 
       const response = await api.post(
         "/payment/create-order",
@@ -113,10 +102,7 @@ const Checkout = () => {
         }
       );
 
-      console.log(
-        "✅ Create Order Response:",
-        response.data
-      );
+      
 
       const razorpayOrder = response.data.order;
 
@@ -130,10 +116,7 @@ const Checkout = () => {
         return;
       }
 
-      console.log(
-        "✅ Razorpay Order:",
-        razorpayOrder
-      );
+      
 
       // ========================================
       // STEP 3: RAZORPAY CHECKOUT
@@ -157,19 +140,13 @@ const Checkout = () => {
         // ========================================
 
         handler: async function (paymentResponse) {
-          console.log(
-            "✅ Razorpay Payment Response:",
-            paymentResponse
-          );
-
+          
           try {
             // ========================================
             // STEP 5: VERIFY PAYMENT
             // ========================================
 
-            console.log(
-              "🔥 Verifying payment..."
-            );
+            
 
             const verifyResponse = await api.post(
               "/payment/verify-payment",
@@ -185,10 +162,7 @@ const Checkout = () => {
               }
             );
 
-            console.log(
-              "✅ Payment Verification:",
-              verifyResponse.data
-            );
+           
 
             // ========================================
             // STEP 6: IF PAYMENT VERIFIED
@@ -196,9 +170,7 @@ const Checkout = () => {
             // ========================================
 
             if (verifyResponse.data.success) {
-              console.log(
-                "🔥 Payment verified. Creating actual order..."
-              );
+             
 
               const orderResponse = await api.post(
                 "/orders",
@@ -221,10 +193,7 @@ const Checkout = () => {
                 }
               );
 
-              console.log(
-                "✅ ORDER CREATED:",
-                orderResponse.data
-              );
+            
 
               // ========================================
               // STEP 7: CLEAR CART
@@ -232,9 +201,7 @@ const Checkout = () => {
 
               clearCart();
 
-              console.log(
-                "🛒 Cart cleared successfully"
-              );
+              
 
               alert(
                 "Order placed successfully! 🎉"
@@ -310,9 +277,7 @@ const Checkout = () => {
         return;
       }
 
-      console.log(
-        "✅ Razorpay SDK loaded"
-      );
+     
 
       // ========================================
       // STEP 9: CREATE RAZORPAY INSTANCE
@@ -339,9 +304,7 @@ const Checkout = () => {
         }
       );
 
-      console.log(
-        "🚀 Opening Razorpay Checkout..."
-      );
+    
 
       // ========================================
       // STEP 10: OPEN RAZORPAY

@@ -42,18 +42,7 @@ export const sendVerificationEmail = async (email, token) => {
       `${process.env.CLIENT_URL}/verify-email/${token}`;
 
 
-    // ========================================
-    // VERIFICATION DEBUG
-    // ========================================
-
-    console.log("================================");
-    console.log("VERIFICATION EMAIL DEBUG");
-    console.log("EMAIL:", email);
-    console.log("TOKEN:", token);
-    console.log("TOKEN LENGTH:", token?.length);
-    console.log("CLIENT URL:", process.env.CLIENT_URL);
-    console.log("VERIFICATION URL:", verificationUrl);
-    console.log("================================");
+   
 
 
     // ========================================
@@ -134,18 +123,7 @@ export const sendResetPasswordEmail = async (email, token) => {
       `${process.env.CLIENT_URL}/reset-password/${token}`;
 
 
-    // ========================================
-    // RESET PASSWORD DEBUG
-    // ========================================
-
-    console.log("================================");
-    console.log("RESET PASSWORD EMAIL DEBUG");
-    console.log("EMAIL:", email);
-    console.log("TOKEN:", token);
-    console.log("TOKEN LENGTH:", token?.length);
-    console.log("CLIENT URL:", process.env.CLIENT_URL);
-    console.log("RESET URL:", resetUrl);
-    console.log("================================");
+    
 
 
     // ========================================

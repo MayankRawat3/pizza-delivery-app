@@ -15,12 +15,7 @@ function ProtectedRoute({ adminOnly = false }) {
     return <Navigate to="/login" replace />;
   }
 
-  // TEMPORARY DEBUG
-  console.log("PROTECTED ROUTE:", {
-    adminOnly,
-    user,
-    role: user?.role
-  });
+  
 
   // Admin-only route
   if (adminOnly && user?.role !== "admin") {

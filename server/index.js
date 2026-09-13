@@ -89,13 +89,6 @@ app.use(
 );
 
 
-app.get("/api/payment-test", (req, res) => {
-  console.log("🔥 PAYMENT TEST ROUTE HIT");
-
-  res.json({
-    message: "Payment test route is working"
-  });
-});
 
 // ========================================
 // ADMIN ROUTES
@@ -127,40 +120,6 @@ app.use(
 );
 
 
-
-// ========================================
-// DIRECT PATCH TEST ROUTE
-// ========================================
-
-app.patch(
-  "/api/orders/patch-direct",
-  (req, res) => {
-    res.json({
-      message: "Direct PATCH route is working"
-    });
-  }
-);
-
-// ========================================
-// PRODUCT TEST ROUTE
-// ========================================
-
-app.get(
-  "/api/products-test",
-  (req, res) => {
-    res.json({
-      message: "Product test route is working"
-    });
-  }
-);
-
-app.get("/api/payment-test", (req, res) => {
-  console.log("🔥 PAYMENT TEST ROUTE HIT");
-
-  res.json({
-    message: "Payment test route is working"
-  });
-});
 
 // ========================================
 // ROOT ROUTE
