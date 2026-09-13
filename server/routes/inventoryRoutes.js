@@ -15,7 +15,8 @@ import { adminOnly } from "../middleware/adminMiddleware.js";
 const router = express.Router();
 
 // ==========================================
-// GET ALL INVENTORY
+// CHECK INVENTORY BEFORE PAYMENT
+// Customer can access this
 // ==========================================
 
 router.post(
@@ -24,6 +25,10 @@ router.post(
   checkInventoryBeforePayment
 );
 
+// ==========================================
+// GET ALL INVENTORY
+// Admin only
+// ==========================================
 
 router.get(
   "/",
@@ -34,15 +39,8 @@ router.get(
 
 // ==========================================
 // GET SINGLE INVENTORY ITEM
+// Admin only
 // ==========================================
-
-router.post(
-  "/check",
-  protect,
-  adminOnly,
-  checkInventoryBeforePayment
-);
-
 
 router.get(
   "/:id",
@@ -53,6 +51,7 @@ router.get(
 
 // ==========================================
 // CREATE INVENTORY ITEM
+// Admin only
 // ==========================================
 
 router.post(
@@ -64,6 +63,7 @@ router.post(
 
 // ==========================================
 // UPDATE INVENTORY
+// Admin only
 // ==========================================
 
 router.patch(
@@ -75,6 +75,7 @@ router.patch(
 
 // ==========================================
 // DELETE INVENTORY ITEM
+// Admin only
 // ==========================================
 
 router.delete(

@@ -4,6 +4,7 @@ import api from "../utils/api";
 const AdminInventory = () => {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +20,10 @@ const AdminInventory = () => {
       setInventory(response.data.inventory);
     } catch (error) {
       console.error("FETCH INVENTORY ERROR:", error);
-      alert(error.response?.data?.message || "Failed to fetch inventory");
+      alert(
+        error.response?.data?.message ||
+          "Failed to fetch inventory"
+      );
     } finally {
       setLoading(false);
     }
@@ -61,11 +65,18 @@ const AdminInventory = () => {
       fetchInventory();
     } catch (error) {
       console.error("ADD INVENTORY ERROR:", error);
-      alert(error.response?.data?.message || "Failed to add inventory");
+      alert(
+        error.response?.data?.message ||
+          "Failed to add inventory"
+      );
     }
   };
 
-  const handleUpdate = async (id, quantity, threshold) => {
+  const handleUpdate = async (
+    id,
+    quantity,
+    threshold
+  ) => {
     try {
       await api.patch(`/inventory/${id}`, {
         quantity: Number(quantity),
@@ -77,7 +88,10 @@ const AdminInventory = () => {
       fetchInventory();
     } catch (error) {
       console.error("UPDATE INVENTORY ERROR:", error);
-      alert(error.response?.data?.message || "Failed to update inventory");
+      alert(
+        error.response?.data?.message ||
+          "Failed to update inventory"
+      );
     }
   };
 
@@ -96,7 +110,10 @@ const AdminInventory = () => {
       fetchInventory();
     } catch (error) {
       console.error("DELETE INVENTORY ERROR:", error);
-      alert(error.response?.data?.message || "Failed to delete inventory");
+      alert(
+        error.response?.data?.message ||
+          "Failed to delete inventory"
+      );
     }
   };
 
@@ -104,15 +121,89 @@ const AdminInventory = () => {
     return <h2>Loading inventory...</h2>;
   }
 
+  // LOW STOCK = quantity is less than or equal to threshold
+  const lowStockItems = inventory.filter(
+    (item) => item.quantity <= item.threshold
+  );
+
+  const displayedInventory =
+    filter === "low"
+      ? lowStockItems
+      : inventory;
+
   return (
-    <div style={{ padding: "30px" }}>
+    <div
+      style={{
+        padding: "30px",
+        maxWidth: "1200px",
+        margin: "0 auto"
+      }}
+    >
       <h1>Inventory Management</h1>
 
-      {/* ADD INVENTORY */}
+      {/* ==========================================
+          INVENTORY SUMMARY
+      ========================================== */}
+
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          margin: "20px 0",
+          flexWrap: "wrap"
+        }}
+      >
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            padding: "15px 25px"
+          }}
+        >
+          <strong>Total Items</strong>
+          <h2>{inventory.length}</h2>
+        </div>
+
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            padding: "15px 25px"
+          }}
+        >
+          <strong>Low Stock Items</strong>
+          <h2>{lowStockItems.length}</h2>
+        </div>
+
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            padding: "15px 25px"
+          }}
+        >
+          <strong>In Stock Items</strong>
+          <h2>
+            {inventory.length - lowStockItems.length}
+          </h2>
+        </div>
+      </div>
+
+      {/* ==========================================
+          ADD INVENTORY
+      ========================================== */}
+
       <div style={{ marginBottom: "30px" }}>
         <h2>Add Inventory Item</h2>
 
-        <form onSubmit={handleAdd}>
+        <form
+          onSubmit={handleAdd}
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap"
+          }}
+        >
           <input
             type="text"
             name="name"
@@ -130,7 +221,9 @@ const AdminInventory = () => {
             <option value="base">Base</option>
             <option value="sauce">Sauce</option>
             <option value="cheese">Cheese</option>
-            <option value="vegetable">Vegetable</option>
+            <option value="vegetable">
+              Vegetable
+            </option>
           </select>
 
           <input
@@ -168,14 +261,63 @@ const AdminInventory = () => {
         </form>
       </div>
 
-      {/* INVENTORY TABLE */}
-      <div>
-        <h2>Current Inventory</h2>
+      {/* ==========================================
+          FILTER
+      ========================================== */}
 
-        {inventory.length === 0 ? (
-          <p>No inventory items found.</p>
+      <div style={{ marginBottom: "20px" }}>
+        <button
+          onClick={() => setFilter("all")}
+          style={{
+            marginRight: "10px",
+            fontWeight:
+              filter === "all"
+                ? "bold"
+                : "normal"
+          }}
+        >
+          📦 All Items ({inventory.length})
+        </button>
+
+        <button
+          onClick={() => setFilter("low")}
+          style={{
+            fontWeight:
+              filter === "low"
+                ? "bold"
+                : "normal"
+          }}
+        >
+          ⚠️ Low Stock ({lowStockItems.length})
+        </button>
+      </div>
+
+      {/* ==========================================
+          INVENTORY TABLE
+      ========================================== */}
+
+      <div>
+        <h2>
+          {filter === "low"
+            ? "Low Stock Items"
+            : "Current Inventory"}
+        </h2>
+
+        {displayedInventory.length === 0 ? (
+          <p>
+            {filter === "low"
+              ? "🎉 No low stock items."
+              : "No inventory items found."}
+          </p>
         ) : (
-          <table border="1" cellPadding="10">
+          <table
+            border="1"
+            cellPadding="10"
+            style={{
+              width: "100%",
+              borderCollapse: "collapse"
+            }}
+          >
             <thead>
               <tr>
                 <th>Name</th>
@@ -189,11 +331,19 @@ const AdminInventory = () => {
             </thead>
 
             <tbody>
-              {inventory.map((item) => {
-                const isLowStock = item.quantity <= item.threshold;
+              {displayedInventory.map((item) => {
+                const isLowStock =
+                  item.quantity <= item.threshold;
 
                 return (
-                  <tr key={item._id}>
+                  <tr
+                    key={item._id}
+                    style={{
+                      backgroundColor: isLowStock
+                        ? "#fff3cd"
+                        : "transparent"
+                    }}
+                  >
                     <td>{item.name}</td>
 
                     <td>{item.category}</td>
@@ -220,22 +370,28 @@ const AdminInventory = () => {
 
                     <td>
                       {isLowStock ? (
-                        <strong>⚠️ Low Stock</strong>
+                        <strong>
+                          🔴 Low Stock
+                        </strong>
                       ) : (
-                        <strong>✅ In Stock</strong>
+                        <strong>
+                          🟢 In Stock
+                        </strong>
                       )}
                     </td>
 
                     <td>
                       <button
                         onClick={() => {
-                          const quantity = document.getElementById(
-                            `quantity-${item._id}`
-                          ).value;
+                          const quantity =
+                            document.getElementById(
+                              `quantity-${item._id}`
+                            ).value;
 
-                          const threshold = document.getElementById(
-                            `threshold-${item._id}`
-                          ).value;
+                          const threshold =
+                            document.getElementById(
+                              `threshold-${item._id}`
+                            ).value;
 
                           handleUpdate(
                             item._id,
@@ -248,7 +404,12 @@ const AdminInventory = () => {
                       </button>
 
                       <button
-                        onClick={() => handleDelete(item._id)}
+                        onClick={() =>
+                          handleDelete(item._id)
+                        }
+                        style={{
+                          marginLeft: "10px"
+                        }}
                       >
                         Delete
                       </button>
